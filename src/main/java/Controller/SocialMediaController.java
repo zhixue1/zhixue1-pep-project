@@ -107,23 +107,33 @@ public class SocialMediaController {
     private void getOneMessageHandler(Context ctx){
         int messageId = Integer.parseInt(ctx.pathParam("message_id"));
         Message message = messageService.getOneMessage(messageId);
-        ctx.json(message);
-        ctx.status(200);
+        if(message != null){
+            ctx.json(message);
+            ctx.status(200);
+        } else {
+            ctx.status(200);
+        }
+        
     }
 
     //delete a message given message id handler
     private void deleteAMessageHandler(Context ctx){
         int messageId = Integer.parseInt(ctx.pathParam("message_id"));
         Message deletedMessage = messageService.deleteAMessage(messageId);
-        ctx.json(deletedMessage);
-        ctx.status(200);
+        if(deletedMessage != null){
+            ctx.json(deletedMessage);
+            ctx.status(200);
+        } else {
+            ctx.status(200);
+        }
     }
 
     //update a message given message id handler
-    private void patchUpdateMessageHandler(Context ctx){
+    private void patchUpdateMessageHandler(Context ctx) throws JsonProcessingException{
+        ObjectMapper om = new ObjectMapper();
         int messageId = Integer.parseInt(ctx.pathParam("message_id"));
-        String messageText = ctx.body();
-        Message updatedMessage = messageService.updateMessage(messageId, messageText);
+        Message message = om.readValue(ctx.body(), Message.class);
+        Message updatedMessage = messageService.updateMessage(messageId, message.getMessage_text());
         if(updatedMessage != null){
             ctx.json(updatedMessage);
             ctx.status(200);
